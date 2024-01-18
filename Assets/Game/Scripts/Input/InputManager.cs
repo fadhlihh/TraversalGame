@@ -1,9 +1,16 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class InputManager : MonoBehaviour
 {
+    public Action<Vector2> OnMoveInput;
+    public Action<bool> OnSprintInput;
+    public Action OnJumpInput;
+    public Action OnClimbInput;
+    public Action OnCancelClimb;
+
     private void Update()
     {
         CheckJumpInput();
@@ -22,8 +29,11 @@ public class InputManager : MonoBehaviour
     {
         float verticalAxis = Input.GetAxis("Vertical");
         float horizontalAxis = Input.GetAxis("Horizontal");
-        Debug.Log("Vertical Axis: " + verticalAxis);
-        Debug.Log("Horizontal Axis: " + horizontalAxis);
+        Vector2 inputAxis = new Vector2(horizontalAxis, verticalAxis);
+        if (OnMoveInput != null)
+        {
+            OnMoveInput(inputAxis);
+        }
     }
 
 
@@ -32,7 +42,7 @@ public class InputManager : MonoBehaviour
         bool isPressJumpInput = Input.GetKeyDown(KeyCode.Space);
         if (isPressJumpInput)
         {
-            Debug.Log("Jump");
+            OnJumpInput();
         }
     }
 
@@ -43,11 +53,11 @@ public class InputManager : MonoBehaviour
 
         if (isHoldSprintInput)
         {
-            Debug.Log("Sprinting");
+            OnSprintInput(true);
         }
         else
         {
-            Debug.Log("Not Sprinting");
+            OnSprintInput(false);
         }
     }
 
@@ -75,7 +85,7 @@ public class InputManager : MonoBehaviour
         bool isPressClimbInput = Input.GetKeyDown(KeyCode.E);
         if (isPressClimbInput)
         {
-            Debug.Log("Climb");
+            OnClimbInput();
         }
     }
 
@@ -93,7 +103,10 @@ public class InputManager : MonoBehaviour
         bool isPressCancelInput = Input.GetKeyDown(KeyCode.C);
         if (isPressCancelInput)
         {
-            Debug.Log("Cancel Climb or Glide");
+            if (OnCancelClimb != null)
+            {
+                OnCancelClimb();
+            }
         }
     }
 
