@@ -34,6 +34,8 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 _climbOffset;
     [SerializeField]
     private float _climbSpeed;
+    [SerializeField]
+    private Transform _cameraTransform;
 
     private Rigidbody _rigidbody;
     private float _speed;
@@ -45,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody>();
         _speed = _walkSpeed;
         _playerStance = PlayerStance.Stand;
+        HideAndLockCursor();
     }
 
     private void Start()
@@ -71,6 +74,12 @@ public class PlayerMovement : MonoBehaviour
         CheckStep();
     }
 
+    private void HideAndLockCursor()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+    }
+
     private void Move(Vector2 axisDirection)
     {
         Vector3 movementDirection = Vector3.zero;
@@ -80,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
         {
             if (axisDirection.magnitude >= 0.1)
             {
-                float rotationAngle = Mathf.Atan2(axisDirection.x, axisDirection.y) * Mathf.Rad2Deg;
+                float rotationAngle = Mathf.Atan2(axisDirection.x, axisDirection.y) * Mathf.Rad2Deg + _cameraTransform.eulerAngles.y;
                 transform.rotation = Quaternion.Euler(0f, rotationAngle, 0f);
                 movementDirection = Quaternion.Euler(0f, rotationAngle, 0f) * Vector3.forward;
                 _rigidbody.AddForce(movementDirection * _speed * Time.deltaTime);
